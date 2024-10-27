@@ -20,6 +20,13 @@ job_t* create_job(int pid, int arrival, int service, int proiority) {
     job->arrive_time = arrival;
     job->service_time = service;
     job->priority = proiority;
+    job->start_time = -1;    // When the process starts running
+    job->end_time = -1;      // When the process finishes
+    job->completed = 0;
+
+            // Statistics tracking
+    job->ready_time = 0;    // Time spent in ready queue
+    job->io_time = 0;       // Time spent in I/O state
     return job;
 }
 
@@ -42,6 +49,8 @@ void load_from_file(char* file, queue_t* queue) {
         //printf("Start loading from file: %d, %d, %d, %d\n", n1, n2, n3, n4);
         job_t* job_to_queue = create_job(n1,n2,n3,n4);
         enqueue(queue, job_to_queue);
+
+
 
         //printf("job added to queue:");
         //print_job((job_t*)peek_back(queue));
