@@ -1,5 +1,6 @@
 // coordinator.c
 #include <stdio.h>
+#include <limits.h>
 #include "job.c"
 
 int main(int argc, char* argv[]) {
@@ -14,12 +15,17 @@ int main(int argc, char* argv[]) {
     queue_t* wait_queue = create_queue();
     queue_t* finished_queue = create_queue();
 
-    // Load jobs from the file
-    if (argc != 2) {
-        printf("Please provide one job file as an argument.\n");
-        return 1;
+    if (test_mode){
+        load_from_file("job1.txt", job_queue);
+    } else {
+        // Load jobs from the file
+        if (argc != 2) {
+            printf("Please provide one job file as an argument.\n");
+            return 1;
+        }
+        load_from_file(argv[1], job_queue);
     }
-    load_from_file(argv[1], job_queue);
+
 
     
 
@@ -127,21 +133,56 @@ int main(int argc, char* argv[]) {
     printf("Job#    |  in ready to run  |  in sleeping on   |  in system    |\n");
     printf("        |  state            |  I/O state        |               |\n");
     printf("========+===================+===================+===============+\n");
-    // iterate though finished queeu to print out result
+    
+    // Print: iterate though finished queeu to print out result
     node_t* temp = finished_queue->front;
+    int short_time = INT_MAX; //record the shortest job completion time
+    int long_time = -1;       // record longest job completion time
+    int total_time_comp = 0;
+    int total_time_ready = 0;
+    int total_time_io = 0;
+
+
     while (temp != NULL) {
         job_t* to_print = (job_t*)temp->data;
+        
+        // update all the numbers
+        int time_in_sys = to_print->end_time - to_print->start_time;
+        total_time_comp += time_in_sys;
+        total_time_ready += to_print->ready_time;
+        total_time_io += to_print->io_time;
+        if (time_in_sys < short_time) {
+            short_time = time_in_sys;
+        }
+        if (time_in_sys > long_time) {
+            long_time = time_in_sys;
+        }
 
-        //printf("pid%5d|%5d|%5d|%5d|\n", temp->pid, );
-        int time_in_sys = to_print->end_time - to_print->arrive_time;
-        printf("pid%4d |  %-17d|  %-17d|  %-12d|\n", 
-                to_print->pid, to_print->ready_time, to_print->io_time, time_in_sys)
-;
+        // print out everything
+        printf("pid%4d |  %-17d|  %-17d|  %-13d|\n", 
+                to_print->pid, to_print->ready_time, to_print->io_time, time_in_sys);
+
+        // if (test_mode) {
+        //     printf("pid%4d |  %-17d|  %-17d|\n", 
+        //             to_print->pid, to_print->start_time, to_print->end_time);
+        // }
 
         temp = temp->next;
-        
+
 
     }
+
+    // Print the total status
+    printf("================================================================+\n");
+    printf("Total simulation run time: %d\n", clock);
+    printf("Total number of jobs: %d\n", finished_queue->count);
+    printf("Shortest job completion time: %d\n", short_time);
+    printf("Longest job completion time: %d\n", long_time);
+    printf("Average job completion time: %d\n", total_time_comp / finished_queue->count);
+    printf("Average time in ready queue: %d\n", total_time_ready / finished_queue->count);
+    printf("Average time sleeping on I/O: %d\n", total_time_io / finished_queue->count);
+    printf("\n");
+
     
 
 
