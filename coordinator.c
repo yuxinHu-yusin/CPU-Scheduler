@@ -12,6 +12,7 @@ int main(int argc, char* argv[]) {
     // set up the whole queue thing
     queue_t* job_queue = create_queue();
     queue_t* wait_queue = create_queue();
+    queue_t* finished_queue = create_queue();
 
     // Load jobs from the file
     if (argc != 2) {
@@ -36,6 +37,11 @@ int main(int argc, char* argv[]) {
     
         // loop of the process
         while (1) {
+
+            // set start time when first arrive
+            if (current_job->start_time == -1) {
+                current_job->start_time = clock;
+            }
 
             // ckeck of the current job need IO
             int state = IO_request();
@@ -69,7 +75,13 @@ int main(int argc, char* argv[]) {
             // check if any of the job in the wait queue has finish waiting
             for (int i = 0; i < wait_queue->count; i++) {
                 job_t* temp = dequeue(wait_queue); // pull out a job from wait
+                temp->io_time++; // increment 1 to IO waiting time 
                 if (IO_complete()) {
+
+                    if (test_mode) {
+                        printf("IO Completed: %d\n", temp->pid);
+                    }
+
                     enqueue(job_queue, temp);
                 } else {
                     enqueue(wait_queue, temp); // enqueue back if still need wait
@@ -78,25 +90,60 @@ int main(int argc, char* argv[]) {
             
 
 
-
+            // check if current job is completed
             if (current_job->service_time == 0) {
-                printf("A job completed: ");
-                print_job(current_job);
-                printf("\n");
+                // record the end time when a job is completed
+                current_job->end_time = clock;
+                enqueue(finished_queue, current_job); 
+                if (test_mode) {
+                    printf("A job completed: ");
+                    print_job(current_job);
+                    printf("\n");
+                }
+
 
                 break;
             }
             
-            
+            // add 1 to ready_time to all the job in the ready queue
+            node_t* temp = job_queue->front;
+            while (temp != NULL) {
+                job_t* to_add = (job_t*)temp->data;
+                to_add->ready_time++;
+                temp = temp->next;
+            }
+    
+            // increment clock time
             clock++;
             current_job->service_time--;
 
         }
 
 
-        
-    
     }
+
+    // need to print out everything for the finsiehd queue
+    printf("        |  Total time       |  Total time       |  Total time   |\n");
+    printf("Job#    |  in ready to run  |  in sleeping on   |  in system    |\n");
+    printf("        |  state            |  I/O state        |               |\n");
+    printf("========+===================+===================+===============+\n");
+    // iterate though finished queeu to print out result
+    node_t* temp = finished_queue->front;
+    while (temp != NULL) {
+        job_t* to_print = (job_t*)temp->data;
+
+        //printf("pid%5d|%5d|%5d|%5d|\n", temp->pid, );
+        int time_in_sys = to_print->end_time - to_print->arrive_time;
+        printf("pid%4d |  %-17d|  %-17d|  %-12d|\n", 
+                to_print->pid, to_print->ready_time, to_print->io_time, time_in_sys)
+;
+
+        temp = temp->next;
+        
+
+    }
+    
+
 
 
 

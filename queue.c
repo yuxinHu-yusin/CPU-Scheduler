@@ -96,7 +96,7 @@ void * dequeue(queue_t *queue)
         }
 
         free(to_free);
-        queue->count--;
+        queue->count;
 
 
         return return_element;

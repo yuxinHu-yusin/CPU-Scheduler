@@ -81,6 +81,7 @@ job_t* create_from_file(char* file_name) {
 }
 
 // IO and rand stuff
+//
 int os_rand() {
     return rand();
 }
