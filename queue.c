@@ -51,6 +51,7 @@ queue_t *create_queue()
         queue_t *queue = (queue_t *)malloc(sizeof(queue_t));
         queue->front = NULL;
         queue->back = NULL;
+        queue->count = 0;
         return queue;
 }
 
@@ -73,6 +74,8 @@ void enqueue(queue_t *queue, void *element)
 
         }
 
+        queue->count++;
+
 }
 
 
@@ -93,6 +96,8 @@ void * dequeue(queue_t *queue)
         }
 
         free(to_free);
+        queue->count--;
+
 
         return return_element;
 }

@@ -10,6 +10,7 @@ typedef struct node {
 typedef struct {
         node_t *front;
         node_t *back;
+        int count;
 } queue_t;
 
 int is_empty(queue_t *queue);
