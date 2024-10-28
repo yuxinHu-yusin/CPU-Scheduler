@@ -27,6 +27,8 @@ job_t* create_job(int pid, int arrival, int service, int proiority) {
             // Statistics tracking
     job->ready_time = 0;    // Time spent in ready queue
     job->io_time = 0;       // Time spent in I/O state
+    job->cpu_time = 0;
+
     return job;
 }
 
