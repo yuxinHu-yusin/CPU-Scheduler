@@ -29,3 +29,5 @@ test: all
 
 clean:
 	rm -f $(EXECS) *.o RR_output*.txt MLFQ_output*.txt SRTF_output*.txt
+
+	
