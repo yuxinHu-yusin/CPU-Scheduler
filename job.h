@@ -14,6 +14,7 @@ typedef struct job {
     // Statistics tracking
     int ready_time;    // Time spent in ready queue
     int io_time;       // Time spent in I/O state
+    int cpu_time;      // Time running on CPU
 
 } job_t;
 
