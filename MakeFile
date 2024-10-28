@@ -19,13 +19,13 @@ SRTF: $(SRTF_SRCS)
 	$(CC) $(CFLAGS) -o SRTF $(SRTF_SRCS)
 
 test: all
-	./RR job1.txt > RR_output.txt
+	./RR job1.txt > RR_output1.txt
 	./RR job2.txt > RR_output2.txt
-	./MLFQ job1.txt > MLFQ_output.txt
+	./MLFQ job1.txt > MLFQ_output1.txt
 	./MLFQ job2.txt > MLFQ_output2.txt
-	./SRTF job1.txt > SRTF_output.txt
+	./SRTF job1.txt > SRTF_output1.txt
 	./SRTF job2.txt > SRTF_output2.txt
-	echo "Tests completed. Check output files: RR_output.txt, MLFQ_output.txt, SRTF_output.txt, etc."
+	echo "Tests completed. Check output files."
 
 clean:
-	rm -f $(EXECS) *.o RR_output*.txt MLFQ_output*.txt SRTF_output*.txt
+	rm -f $(EXECS) *.o *.txt
