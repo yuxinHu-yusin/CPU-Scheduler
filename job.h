@@ -20,8 +20,9 @@ void print_job(job_t* job);
 job_t* create_job(int pid, int arrival, int service, int priority);
 int load_from_file(char* file, queue_t* queue);
 
-// Add the following declarations
+
 void os_srand();
+int os_rand();
 int IO_request();
 int IO_complete();
 

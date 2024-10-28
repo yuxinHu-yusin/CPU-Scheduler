@@ -198,10 +198,10 @@ int main(int argc, char* argv[]) {
     printf("\n");
 
     // Clean up (optional, but good practice)
-    destroy_queue(job_queue);
-    destroy_queue(ready_queue);
-    destroy_queue(wait_queue);
-    destroy_queue(finished_queue);
+    free_queue(job_queue);
+    free_queue(ready_queue);
+    free_queue(wait_queue);
+    free_queue(finished_queue);
 
     return 0;
 }
