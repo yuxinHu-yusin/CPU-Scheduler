@@ -1,6 +1,6 @@
 #include <stdio.h>
-#include "job.c"
-#include "queue.c"
+#include "job.h"
+#include "queue.h"
 #include <stdlib.h>
 
 #define NUM_QUEUES 3
