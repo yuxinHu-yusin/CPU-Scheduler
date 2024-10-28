@@ -25,11 +25,11 @@ job_t* create_job(int pid, int arrival, int service, int priority) {
     return job;
 }
 
-void load_from_file(char* file, queue_t* queue) {
+int load_from_file(char* file, queue_t* queue) {  // 保持和 job.h 一致的 int 返回类型
     FILE* load_file = fopen(file, "r");
     if (load_file == NULL) {
-        printf("Failed to open file\n");
-        return;
+        printf("Failed to open file: %s\n", file);
+        return -1;  // 文件打开失败
     }
 
     int n1, n2, n3, n4;
@@ -38,31 +38,11 @@ void load_from_file(char* file, queue_t* queue) {
         enqueue(queue, job_to_queue);
     }
     fclose(load_file);
+    return 0;  // 文件成功加载
 }
 
-job_t* create_from_file(char* file_name) {
-    FILE* file = fopen(file_name, "r");
-    if (file == NULL) {
-        printf("Failed to open file\n");
-        return NULL;
-    }
-
-    int n1, n2, n3, n4;
-    job_t* return_job = NULL;
-    if (fscanf(file, "%d:%d:%d:%d", &n1, &n2, &n3, &n4) == 4) {
-        return_job = create_job(n1, n2, n3, n4);
-    }
-    fclose(file);
-    return return_job;
-}
-
-int os_rand() {
-    return rand();
-}
-
-void os_srand() {
-    srand(1);
-}
+int os_rand() { return rand(); }
+void os_srand() { srand(1); }
 
 int IO_request() {
     return (os_rand() % CHANCE_OF_IO_REQUEST == 0) ? 1 : 0;

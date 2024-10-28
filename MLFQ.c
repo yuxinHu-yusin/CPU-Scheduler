@@ -1,8 +1,8 @@
+
 #include <stdlib.h>
 #include <stdio.h>
 #include "job.h"
 #include "queue.h"
-
 #define NUM_QUEUES 3
 #define TIME_QUANTUM_LEVEL1 2
 #define TIME_QUANTUM_LEVEL2 4

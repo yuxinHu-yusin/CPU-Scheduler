@@ -1,4 +1,4 @@
-// coordinator.c
+// SRTF.c
 #include <stdio.h>
 #include <limits.h>
 #include "job.h"
@@ -6,177 +6,213 @@
 
 #define test_mode 1
 
-// define the time quantum as 2
-#define TIME_QUANTUM 2
-
+// Helper function to check if jobs have arrived
 int check_arrive(queue_t* job_queue, queue_t* ready_queue, int clock);
 
+// Helper function to dequeue the job with the shortest remaining time
+job_t* dequeue_short(queue_t* job_queue);
+
 int main(int argc, char* argv[]) {
-
-
-    int clock=0;
+    int clock = 0;
     os_srand();
-    //load up the job file and do all the initilization
-    // set up the whole queue thing
-    queue_t* job_queue = create_queue();        // to load and store all the jobs
-    queue_t* ready_queue = create_queue();      // put the job here when it arrives
-    queue_t* wait_queue = create_queue();       // queue for IO waiting
-    queue_t* finished_queue = create_queue();   // put finished job here
 
-    if (test_mode){
-        load_from_file("job1.txt", job_queue);
+    // Initialize queues
+    queue_t* job_queue = create_queue();        // Stores all jobs loaded from the file
+    queue_t* ready_queue = create_queue();      // Jobs ready to run
+    queue_t* wait_queue = create_queue();       // Jobs waiting for I/O
+    queue_t* finished_queue = create_queue();   // Completed jobs
 
+    // Load jobs from file
+    if (test_mode) {
+        if (load_from_file("job1.txt", job_queue) == -1) {
+            fprintf(stderr, "Error: Failed to open file job1.txt\n");
+            return 1;
+        }
     } else {
-        // Load jobs from the file
         if (argc != 2) {
             printf("Please provide one job file as an argument.\n");
             return 1;
         }
-        load_from_file(argv[1], job_queue);
+        if (load_from_file(argv[1], job_queue) == -1) {
+            fprintf(stderr, "Error: Failed to open file %s\n", argv[1]);
+            return 1;
+        }
     }
 
     clock++;
 
-    // RR scheduler
-    while(!is_empty(ready_queue) || !is_empty(wait_queue) || !is_empty(job_queue)){
+    // Main loop to simulate CPU scheduling
+    job_t* current_job = NULL;
 
-        // check if any job in the arrive, 
-        check_arrive(job_queue, ready_queue, clock);
+    while (!is_empty(job_queue) || !is_empty(wait_queue) ||
+           !is_empty(ready_queue) || current_job != NULL) {
 
-    	// we first check if there are job competed I/O 
-    	int io_count = wait_queue->count;
-    	for(int i = 0; i < io_count; i++){
-    		job_t* io_job = dequeue(wait_queue);
-    		io_job->io_time++; 
+        if (test_mode) {
+            printf("Time: %d\n", clock);
+            printf("job: %d  ready: %d  wait: %d\n",
+                   job_queue->count, ready_queue->count, wait_queue->count);
+        }
 
-    		// if complete, put it into the ready queue
-    		if (IO_complete()) {
-                printf("I/O completed for Job %d\n", io_job->pid);
-                enqueue(ready_queue, io_job);  // Move back to ready queue
+        // Check for job arrivals
+        if (check_arrive(job_queue, ready_queue, clock)) {
+            if (current_job != NULL) {
+                enqueue(ready_queue, current_job);
+            }
+            current_job = dequeue_short(ready_queue);
+        }
+
+        // Process jobs in the wait queue
+        int original_count = wait_queue->count;
+        for (int i = 0; i < original_count; i++) {
+            job_t* temp = dequeue(wait_queue); // Dequeue a job from wait queue
+            temp->io_time++; // Increment IO waiting time
+            if (IO_complete()) {
+                if (test_mode) {
+                    printf("IO Completed: %d\n", temp->pid);
+                }
+                enqueue(ready_queue, temp);
             } else {
-                enqueue(wait_queue, io_job);  // Still waiting, put back to waiting queue
+                enqueue(wait_queue, temp); // Enqueue back if still waiting
             }
-    	}
+        }
 
-    	if (test_mode) {
-                printf("Time: %d\n", clock);
-                printf("job: %d  ready: %d  wait: %d\n",
-                        job_queue->count, ready_queue->count, wait_queue->count);
+        // Check if current job is NULL
+        if (current_job == NULL) {
+            // Get the next job from the ready queue
+            current_job = dequeue_short(ready_queue);
+
+            // No job is ready, advance the clock
+            if (current_job == NULL) {
+                clock++;
+                continue;
             }
+        }
 
-    	//Increment ready_time for all jobs in the ready queue
-	        node_t *temp_node = ready_queue->front;
-	        while (temp_node != NULL) {
-	            job_t *to_add = (job_t *)temp_node->data;
-	            to_add->ready_time++;  // Increment the ready time
-	            temp_node = temp_node->next;  // Move to the next job in the queue
-	        }
-
-
-    	// If there are jobs in the ready queue
-    	if(!is_empty(ready_queue)){
-    		job_t *curr_job = dequeue(ready_queue);
-
-    		// Track the start time if this is the first time the job runs
-            if (curr_job->start_time == -1) {
-                curr_job->start_time = clock;  // Set start time to current clock
-                
-            }
+        // Check if current job is completed
+        if (current_job->service_time == 0) {
+            current_job->end_time = clock;  // Record end time
+            enqueue(finished_queue, current_job);  // Move to finished queue
 
             if (test_mode) {
-	    		printf("Process: %d\n", curr_job->pid);
-	    		printf("Start Time: %d\n", curr_job->start_time);
-	    		printf("Remain Time: %d\n", curr_job->service_time);
-	    		printf("========\n");
-    		}
+                printf("A job completed: ");
+                print_job(current_job);
+                printf("\n");
+            }
 
-    		// update the remain time need
-    		int run_t = 0;
-    		if(curr_job->service_time > TIME_QUANTUM){
-    			run_t = TIME_QUANTUM;
-    		}else{
-    			run_t = curr_job->service_time;
-    		}
+            current_job = dequeue_short(ready_queue); // Get next job
+            continue;
+        }
 
-    		clock += run_t;
-    		curr_job->service_time -= run_t;
-    		
+        // Set start time when the job first starts
+        if (current_job->start_time == -1) {
+            current_job->start_time = clock;
+        }
 
-    		// check if the job request I/O
-    		if (IO_request()) {
-                printf("Job %d requested I/O, moving to I/O queue\n", curr_job->pid);
-                enqueue(wait_queue, curr_job);  // Move to I/O queue
-            }else if (curr_job->service_time == 0) {
-            	// check if the job finished
-		     	curr_job->end_time = clock;  // Record the end time
-		     	curr_job->completed = 1;
-		        printf("Job %d completed and moved to finished queue.\n", curr_job->pid);
-		        enqueue(finished_queue, curr_job);  // Move to finished queue
-		    } else {
-		    	// check if there is mot job arrive, put new job into queue first to ensure fair time 
-		    	check_arrive(job_queue, ready_queue, clock);
-		        // If the job is not complete and do not need I/O
-		        enqueue(ready_queue, curr_job);
-		    }
-		    
-		  }
-		  else {
-            // if no jobs are ready, increment the clock to simulate idle time
-            	clock += 1;
-        	}
-		}
-		  // need to print out everything for the finsiehd queue
-		    printf("        |  Total time       |  Total time       |  Total time   |\n");
-		    printf("Job#    |  in ready to run  |  in sleeping on   |  in system    |\n");
-		    printf("        |  state            |  I/O state        |               |\n");
-		    printf("========+===================+===================+===============+\n");
-		    
-		    // Print: iterate though finished queeu to print out result
-		    node_t* temp = finished_queue->front;
-		    float total_time_comp = 0;
-		    float total_time_ready = 0;
-		    float total_time_io = 0;
+        // Check if current job requests I/O
+        int state = IO_request();
 
+        if (test_mode) {
+            printf("Current Job: %d  Time Left: %d\n", current_job->pid, current_job->service_time);
+            printf("IO Request: %d\n", state);
+            printf("\n");
+        }
 
-		    while (temp != NULL) {
-		        job_t* to_print = (job_t*)temp->data;
-		        
-		        // update all the numbers
-		        int time_in_sys = to_print->end_time - to_print->start_time;
-		        total_time_comp += time_in_sys;
-		        total_time_ready += to_print->ready_time;
-		        total_time_io += to_print->io_time;
-		        // print out everything
-		        printf("pid%4d |  %-17d|  %-17d|  %-13d|\n", 
-		                to_print->pid, to_print->ready_time, to_print->io_time, time_in_sys);
+        if (state == 1) {
+            enqueue(wait_queue, current_job);
 
-		        temp = temp->next;
-	        }
+            if (!is_empty(ready_queue)) {
+                // Switch to the next job if available
+                current_job = dequeue_short(ready_queue);
+                continue;
+            } else {
+                // No other job ready, set current_job to NULL
+                current_job = NULL;
+                clock++;
+                continue;
+            }
+        }
 
-		    // Print the total status
-		    printf("================================================================+\n");
-		    printf("Total simulation run time: %d\n", clock);
-		    printf("Total number of jobs: %d\n", finished_queue->count);
-		    printf("Average job completion time: %.3f\n", total_time_comp / finished_queue->count);
-		    printf("Average time in ready queue: %.3f\n", total_time_ready / finished_queue->count);
-		    printf("Average time sleeping on I/O: %.3f\n", total_time_io / finished_queue->count);
-		    printf("\n");
-		    	
-		 
+        // Add 1 to ready_time for all jobs in the ready queue
+        node_t* temp_node = ready_queue->front;
+        while (temp_node != NULL) {
+            job_t* to_add = (job_t*)temp_node->data;
+            to_add->ready_time++;
+            temp_node = temp_node->next;
+        }
+
+        // Increment clock time
+        clock++;
+
+        // Decrease service_time and increment cpu_time if current_job is not NULL
+        if (current_job != NULL) {
+            current_job->service_time--;
+            current_job->cpu_time++;
+        }
+    }
+
+    // Print the results
+    printf("        |  Total time       |  Total time       |  Total time   |\n");
+    printf("Job#    |  in ready to run  |  in sleeping on   |  in system    |\n");
+    printf("        |  state            |  I/O state        |               |\n");
+    printf("========+===================+===================+===============+\n");
+
+    // Iterate through finished queue to print out results
+    node_t* temp = finished_queue->front;
+    int short_time = INT_MAX; // Record the shortest job completion time
+    int long_time = -1;       // Record the longest job completion time
+    float total_time_comp = 0;
+    float total_time_ready = 0;
+    float total_time_io = 0;
+
+    while (temp != NULL) {
+        job_t* to_print = (job_t*)temp->data;
+
+        // Update statistics
+        int time_in_sys = to_print->end_time - to_print->start_time;
+        total_time_comp += time_in_sys;
+        total_time_ready += to_print->ready_time;
+        total_time_io += to_print->io_time;
+        if (time_in_sys < short_time) {
+            short_time = time_in_sys;
+        }
+        if (time_in_sys > long_time) {
+            long_time = time_in_sys;
+        }
+
+        // Print job statistics
+        printf("pid%4d |  %-17d|  %-17d|  %-13d|\n",
+               to_print->pid, to_print->ready_time, to_print->io_time, time_in_sys);
+
+        temp = temp->next;
+    }
+
+    // Print the total statistics
+    printf("================================================================+\n");
+    printf("Total simulation run time: %d\n", clock);
+    printf("Total number of jobs: %d\n", finished_queue->count);
+    printf("Shortest job completion time: %d\n", short_time);
+    printf("Longest job completion time: %d\n", long_time);
+    printf("Average job completion time: %.3f\n", total_time_comp / finished_queue->count);
+    printf("Average time in ready queue: %.3f\n", total_time_ready / finished_queue->count);
+    printf("Average time sleeping on I/O: %.3f\n", total_time_io / finished_queue->count);
+    printf("\n");
+
+    // Clean up (optional, but good practice)
+    destroy_queue(job_queue);
+    destroy_queue(ready_queue);
+    destroy_queue(wait_queue);
+    destroy_queue(finished_queue);
+
     return 0;
-
 }
 
-// helper function to check if the job in job_queue has arrived
-// if so move all the arrived job into the ready_queue and return 1
-// return 0 if no job is ready at the current time
+// Helper function to check if jobs have arrived
 int check_arrive(queue_t* job_queue, queue_t* ready_queue, int clock) {
-
     int is_arrive = 0;
     int original_count = job_queue->count;
 
     for (int i = 0; i < original_count; i++) {
-        job_t* temp = dequeue(job_queue); // pull out a job from job
+        job_t* temp = dequeue(job_queue); // Dequeue a job from job_queue
 
         if (temp->arrive_time <= clock) {
             if (test_mode) {
@@ -185,19 +221,38 @@ int check_arrive(queue_t* job_queue, queue_t* ready_queue, int clock) {
             is_arrive = 1;
             enqueue(ready_queue, temp);
         } else {
-            enqueue(job_queue, temp); // enqueue back if still need wait
+            enqueue(job_queue, temp); // Enqueue back if not yet arrived
         }
     }
 
-    return is_arrive;        
-
+    return is_arrive;
 }
 
+// Helper function to dequeue the job with the shortest remaining time
+// If a tie occurs, the job with the smaller pid is dequeued
+job_t* dequeue_short(queue_t* job_queue) {
+    if (job_queue->count == 0) {
+        return NULL;
+    }
 
+    job_t* short_job = NULL;
+    int short_time = INT_MAX;
+    int original_count = job_queue->count;
 
+    for (int i = 0; i < original_count; i++) {
+        job_t* temp = dequeue(job_queue); // Dequeue a job
 
+        if (temp->service_time < short_time ||
+            (temp->service_time == short_time && temp->pid < (short_job ? short_job->pid : INT_MAX))) {
+            if (short_job != NULL) {
+                enqueue(job_queue, short_job); // Enqueue the previous shortest job back
+            }
+            short_job = temp;
+            short_time = short_job->service_time;
+        } else {
+            enqueue(job_queue, temp); // Enqueue back if not the shortest
+        }
+    }
 
-
-
-
-
+    return short_job;
+}

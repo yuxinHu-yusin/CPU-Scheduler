@@ -1,7 +1,6 @@
 #ifndef JOB_H
 #define JOB_H
 
-#include <stdio.h>
 #include "queue.h"
 
 typedef struct job {
@@ -17,11 +16,11 @@ typedef struct job {
     int cpu_time;
 } job_t;
 
-job_t* create_job(int pid, int arrival, int service, int priority);
-void load_from_file(char* file, queue_t* queue);
 void print_job(job_t* job);
+job_t* create_job(int pid, int arrival, int service, int priority);
+int load_from_file(char* file, queue_t* queue);
 
-
+// Add the following declarations
 void os_srand();
 int IO_request();
 int IO_complete();
