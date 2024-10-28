@@ -58,6 +58,10 @@ queue_t *create_queue()
 
 void enqueue(queue_t *queue, void *element)
 {
+        if (element == NULL) {
+                return;
+        }
+
         // create a node first for the element
         node_t *node = (node_t*)malloc(sizeof(node_t));
         node->next = NULL;
