@@ -1,9 +1,8 @@
 // coordinator.c
-#include "job.c"
 #include <stdio.h>
 #include <limits.h>
-#include <stdlib.h>
-#include <stdbool.h>
+#include "job.h"
+#include "queue.h"
 
 #define test_mode 1
 

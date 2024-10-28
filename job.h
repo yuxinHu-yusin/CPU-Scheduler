@@ -1,21 +1,29 @@
 #ifndef JOB_H
 #define JOB_H
 
+#include <stdio.h>
+#include "queue.h"
+
 typedef struct job {
     int pid;
     int arrive_time;
     int service_time;
     int priority;
-    
-    int start_time;    // When the process starts running
-    int end_time;      // When the process finishes
+    int start_time;
+    int end_time;
     int completed;
-
-    // Statistics tracking
-    int ready_time;    // Time spent in ready queue
-    int io_time;       // Time spent in I/O state
-    int cpu_time;      // Time running on CPU
-
+    int ready_time;
+    int io_time;
+    int cpu_time;
 } job_t;
 
-#endif 
+job_t* create_job(int pid, int arrival, int service, int priority);
+void load_from_file(char* file, queue_t* queue);
+void print_job(job_t* job);
+
+
+void os_srand();
+int IO_request();
+int IO_complete();
+
+#endif
