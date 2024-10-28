@@ -1,32 +1,31 @@
-# Compiler
 CC = gcc
-
-# Compiler Flags
 CFLAGS = -Wall -g
 
-# Target executable
-TARGET = MLFQ
+EXECS = RR MLFQ SRTF
 
-# Source files
-SRCS = MLFQ.c job.c queue.c
+RR_SRCS = RR.c job.c queue.c
+MLFQ_SRCS = MLFQ.c job.c queue.c
+SRTF_SRCS = SRTF.c job.c queue.c
 
-# Header files
-HDRS = job.h queue.h
+all: $(EXECS)
 
-# Object files
-OBJS = $(SRCS:.c=.o)
+RR: $(RR_SRCS)
+	$(CC) $(CFLAGS) -o RR $(RR_SRCS)
 
-# Default target
-all: $(TARGET)
+MLFQ: $(MLFQ_SRCS)
+	$(CC) $(CFLAGS) -o MLFQ $(MLFQ_SRCS)
 
-# Build target executable
-$(TARGET): $(OBJS)
-	$(CC) $(CFLAGS) -o $(TARGET) $(OBJS)
+SRTF: $(SRTF_SRCS)
+	$(CC) $(CFLAGS) -o SRTF $(SRTF_SRCS)
 
-# Compile .c files to .o files
-%.o: %.c $(HDRS)
-	$(CC) $(CFLAGS) -c $< -o $@
+test: all
+	./RR job1.txt > RR_output.txt
+	./RR job2.txt > RR_output2.txt
+	./MLFQ job1.txt > MLFQ_output.txt
+	./MLFQ job2.txt > MLFQ_output2.txt
+	./SRTF job1.txt > SRTF_output.txt
+	./SRTF job2.txt > SRTF_output2.txt
+	echo "Tests completed. Check output files: RR_output.txt, MLFQ_output.txt, SRTF_output.txt, etc."
 
-# Clean up build files
 clean:
-	rm -f $(OBJS) $(TARGET) output.txt output2.txt
+	rm -f $(EXECS) *.o RR_output*.txt MLFQ_output*.txt SRTF_output*.txt
