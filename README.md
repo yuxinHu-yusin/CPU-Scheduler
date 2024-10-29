@@ -4,7 +4,7 @@
 Jingyi Chen, Yi-Hsuan Lai, Yuxin Hu
 
 
-**Project Overview**
+**Project Overview**<br />
 This project demonstrates the implementation of three CPU scheduling algorithms in C. It includes code for Round Robin (RR), Shortest Remaining Time First (SRTF), and Multilevel Feedback Queue (MLFQ) scheduling, with necessary utilities such as process/job management.<br />
 
 **Round Robin (RR):** Each process is given a fixed time slice in a cyclic manner.<br />
@@ -19,7 +19,7 @@ This project demonstrates the implementation of three CPU scheduling algorithms 
 	Rule4: Once a job use up its time allotment at a given level, its priority is reduced
 	Rule5: After some time period S, move all the job in the system to the topmost queue
 
-**Key Assumptions**
+**Key Assumptions**<br />
 **Time Slice:** In RR, each process receives a fixed time slice of 2 units of time before it is preempted.<br />
 **Preemption:**  Both SRTF and MLFQ can preempt the currently running process to schedule another process.<br />
 **Process Arrival:** All algorithms assume that processes arrive at predefined intervals through job configuration files (e.g., input.txt).<br />
