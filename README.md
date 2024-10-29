@@ -29,9 +29,9 @@ This project demonstrates the implementation of three CPU scheduling algorithms 
 Yi-Hsuan Lai<br />
 	&emsp;Developed SRTF.c and verified the correctness of preemption logic.<br />
 	&emsp;Created queue.c and queue.h to implement the queue structure used by all scheduling algorithms.<br />
-	&emsp;Designed the output structure to display results clearly and consistently.<br />
+	&emsp;Created job.c and job.h to designed I/O operations and random number handling to simulate I/O requests and completions.<br />
 Yuxin Hu<br />
-	&emsp;Created job.c and job.h to manage process attributes and configurations.<br />
+	&emsp;Created job.c and job.h to handle process details and settings.<br />
 	&emsp;Implemented RR.c, ensuring correct time quantum handling and process cycling.<br />
 Jingyi Chen<br />
 	&emsp;Developed MLFQ.c, including code to manage queues and adjust priorities.<br />
