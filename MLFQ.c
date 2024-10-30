@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "job.c"    // Include job definitions
-#include "queue.h"  // Include queue and related functions
+#include "job.c"    
+#include "queue.h"  
 
 #define NUM_QUEUES 3
 #define TIME_QUANTUM_LEVEL1 2
@@ -10,9 +10,9 @@
 #define TEST_MODE 1
 
 typedef struct {
-    queue_t *queues[NUM_QUEUES];  // Array of priority queues
-    int time_quantum[NUM_QUEUES]; // Time quantum for each level
-    int current_boost_time;       // Time since the last boost
+    queue_t *queues[NUM_QUEUES];  
+    int time_quantum[NUM_QUEUES]; 
+    int current_boost_time;      
 } MLFQScheduler;
 
 // initialize the MLFQ scheduler
