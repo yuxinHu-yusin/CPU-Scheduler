@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <limits.h>
 #include "job.h"    // Include job definitions
 #include "queue.h"  // Include queue and related functions
 
@@ -169,6 +170,8 @@ int main(int argc, char *argv[]) {
     printf("========+===================+===================+===============+\n");
 
     node_t* temp = finished_queue->front;
+    int short_time = INT_MAX; //record the shortest job completion time
+    int long_time = -1;       // record longest job completion time
 
     while (temp != NULL) {
         job_t *job = (job_t *)temp->data;
@@ -176,6 +179,13 @@ int main(int argc, char *argv[]) {
         total_time_comp += time_in_system;
         total_time_ready += job->ready_time;
         total_time_io += job->io_time;
+        
+        if (time_in_system < short_time) {
+            short_time = time_in_system;
+        }
+        if (time_in_system > long_time) {
+            long_time = time_in_system;
+        }
 
         printf("pid%4d |  %-17d|  %-17d|  %-13d|\n",
                job->pid, job->ready_time, job->io_time, time_in_system);
@@ -184,6 +194,9 @@ int main(int argc, char *argv[]) {
 
     printf("================================================================+\n");
     printf("Total simulation run time: %d\n", clock);
+    printf("Total number of jobs: %d\n", finished_queue->count);
+    printf("Shortest job completion time: %d\n", short_time);
+    printf("Longest job completion time: %d\n", long_time);
     printf("Average job completion time: %.3f\n", total_time_comp / (float)finished_queue->count);
     printf("Average time in ready queue: %.3f\n", total_time_ready / (float)finished_queue->count);
     printf("Average time sleeping on I/O: %.3f\n", total_time_io / (float)finished_queue->count);

@@ -152,7 +152,8 @@ int main(int argc, char* argv[]) {
     float total_time_comp = 0;
     float total_time_ready = 0;
     float total_time_io = 0;
-
+    int short_time = INT_MAX; //record the shortest job completion time
+    int long_time = -1;       // record longest job completion time
 
     while (temp != NULL) {
         job_t* to_print = (job_t*)temp->data;
@@ -162,6 +163,13 @@ int main(int argc, char* argv[]) {
         total_time_comp += time_in_sys;
         total_time_ready += to_print->ready_time;
         total_time_io += to_print->io_time;
+        if (time_in_sys < short_time) {
+            short_time = time_in_sys;
+        }
+        if (time_in_sys > long_time) {
+            long_time = time_in_sys;
+        }
+
         // print out everything
         printf("pid%4d |  %-17d|  %-17d|  %-13d|\n", 
                 to_print->pid, to_print->ready_time, to_print->io_time, time_in_sys);
@@ -173,6 +181,8 @@ int main(int argc, char* argv[]) {
     printf("================================================================+\n");
     printf("Total simulation run time: %d\n", clock);
     printf("Total number of jobs: %d\n", finished_queue->count);
+    printf("Shortest job completion time: %d\n", short_time);
+    printf("Longest job completion time: %d\n", long_time);
     printf("Average job completion time: %.3f\n", total_time_comp / finished_queue->count);
     printf("Average time in ready queue: %.3f\n", total_time_ready / finished_queue->count);
     printf("Average time sleeping on I/O: %.3f\n", total_time_io / finished_queue->count);

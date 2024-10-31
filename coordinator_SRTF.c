@@ -190,7 +190,7 @@ int main(int argc, char* argv[]) {
         job_t* to_print = (job_t*)temp->data;
         
         // update all the numbers
-        int time_in_sys = to_print->end_time - to_print->start_time;
+        int time_in_sys = to_print->end_time - to_print->arrive_time;
         total_time_comp += time_in_sys;
         total_time_ready += to_print->ready_time;
         total_time_io += to_print->io_time;
