@@ -67,12 +67,6 @@ int main(int argc, char *argv[]) {
     queue_t *wait_queue = create_queue();
     queue_t *finished_queue = create_queue();
 
-    // Load jobs from file (test mode or via command-line)
-    // if(test_mode){
-    //     load_from_file("job1.txt", job_queue);
-    // }else{
-        
-    // }
 
     if (argc == 2) {
         load_from_file(argv[1], job_queue);
