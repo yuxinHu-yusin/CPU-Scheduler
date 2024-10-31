@@ -32,4 +32,4 @@ test: all
 	echo "Tests completed. Check output files."
 
 clean:
-	rm -f $(EXECS) *.o *_output1.txt *_output2.txt *.dsYM
+	rm -f $(EXECS) *.o *_output1.txt *_output2.txt *_output3.text *.dsYM
