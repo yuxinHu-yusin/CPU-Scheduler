@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "job.h"
-#include "queue.c"
+#include "queue.h"
 
 #define CHANCE_OF_IO_REQUEST 10
 #define CHANCE_OF_IO_COMPLETE 4

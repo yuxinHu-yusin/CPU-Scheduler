@@ -1,21 +1,21 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "job.c"    
-#include "queue.h"  
+#include "job.h"    // Include job definitions
+#include "queue.h"  // Include queue and related functions
 
 #define NUM_QUEUES 3
 #define TIME_QUANTUM_LEVEL1 2
 #define TIME_QUANTUM_LEVEL2 4
 #define BOOST_INTERVAL 20
-#define TEST_MODE 1
+#define TEST_MODE 0
 
 typedef struct {
-    queue_t *queues[NUM_QUEUES];  
-    int time_quantum[NUM_QUEUES]; 
-    int current_boost_time;      
+    queue_t *queues[NUM_QUEUES];  // Array of priority queues
+    int time_quantum[NUM_QUEUES]; // Time quantum for each level
+    int current_boost_time;       // Time since the last boost
 } MLFQScheduler;
 
-// initialize the MLFQ scheduler
+// Initialize the MLFQ scheduler
 MLFQScheduler *init_mlfq_scheduler() {
     MLFQScheduler *scheduler = malloc(sizeof(MLFQScheduler));
     for (int i = 0; i < NUM_QUEUES; i++) {
@@ -28,7 +28,7 @@ MLFQScheduler *init_mlfq_scheduler() {
     return scheduler;
 }
 
-// put all jobs to the highest priority queue
+// Boost all jobs to the highest priority queue
 void boost_all_jobs(MLFQScheduler *scheduler) {
     for (int i = 1; i < NUM_QUEUES; i++) {
         while (!is_empty(scheduler->queues[i])) {
@@ -39,13 +39,13 @@ void boost_all_jobs(MLFQScheduler *scheduler) {
     scheduler->current_boost_time = 0;
 }
 
-// enqueue a job into the correct queue based on its priority
+// Enqueue a job into the correct queue based on its priority
 void enqueue_job(MLFQScheduler *scheduler, job_t *job, int queue_level) {
     if (queue_level >= NUM_QUEUES) queue_level = NUM_QUEUES - 1;
     enqueue(scheduler->queues[queue_level], job);
 }
 
-// select the next job to execute from the highest priority queue
+// Select the next job to execute from the highest priority queue
 job_t *get_next_job(MLFQScheduler *scheduler) {
     for (int i = 0; i < NUM_QUEUES; i++) {
         if (!is_empty(scheduler->queues[i])) {
@@ -68,14 +68,17 @@ int main(int argc, char *argv[]) {
     queue_t *finished_queue = create_queue();
 
     // Load jobs from file (test mode or via command-line)
-    if (TEST_MODE) {
-        load_from_file("job1.txt", job_queue);
-    } else {
-        if (argc != 2) {
-            printf("Please provide a job file as an argument.\n");
-            return 1;
-        }
+    // if(test_mode){
+    //     load_from_file("job1.txt", job_queue);
+    // }else{
+        
+    // }
+
+    if (argc == 2) {
         load_from_file(argv[1], job_queue);
+    } else {
+        printf("Please provide a job file as an argument.\n");
+        return 1;
     }
 
     clock++;
