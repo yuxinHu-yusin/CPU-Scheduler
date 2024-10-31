@@ -3,9 +3,9 @@ CFLAGS = -Wall -g
 
 EXECS = RR MLFQ SRTF
 
-RR_SRCS = RR.c job.c queue.c
-MLFQ_SRCS = MLFQ.c job.c queue.c
-SRTF_SRCS = SRTF.c job.c queue.c
+RR_SRCS = coordinator_RR.c job.c queue.c
+MLFQ_SRCS = coordinator_MLFQ.c job.c queue.c
+SRTF_SRCS = coordinator_SRTF.c job.c queue.c
 
 all: $(EXECS)
 
