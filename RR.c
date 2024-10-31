@@ -25,13 +25,18 @@ int main(int argc, char* argv[]) {
     queue_t* wait_queue = create_queue();       // queue for IO waiting
     queue_t* finished_queue = create_queue();   // put finished job here
 
-
-    if (argc == 2) {
+    
+    
+        if (argc == 2) {
           load_from_file(argv[1], job_queue);
       } else {
           printf("Please provide a job file as an argument.\n");
           return 1;
       }
+
+    
+
+    
 
     
 

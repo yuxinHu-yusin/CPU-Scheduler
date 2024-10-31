@@ -4,7 +4,7 @@
 #include "job.h"
 #include "queue.h"
 
-#define test_mode 1
+#define test_mode 0
 
 
 // help function to check if job arrive
@@ -25,16 +25,14 @@ int main(int argc, char* argv[]) {
     queue_t* wait_queue = create_queue();       // queue for IO waiting
     queue_t* finished_queue = create_queue();   // put finished job here
 
-    if (test_mode){
-        load_from_file("job1.txt", job_queue);
-    } else {
-        // Load jobs from the file
-        if (argc != 2) {
-            printf("Please provide one job file as an argument.\n");
-            return 1;
-        }
-        load_from_file(argv[1], job_queue);
+    
+    // Load jobs from the file
+    if (argc != 2) {
+        printf("Please provide one job file as an argument.\n");
+        return 1;
     }
+    load_from_file(argv[1], job_queue);
+
 
 
     
