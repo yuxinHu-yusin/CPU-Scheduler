@@ -1,0 +1,80 @@
+Time: 1
+job: 3  ready: 0  wait: 0
+Job arrived: 321
+Current Job: 321  Time Left: 7
+IO Request: 0
+
+Time: 2
+job: 2  ready: 0  wait: 0
+Current Job: 321  Time Left: 6
+IO Request: 0
+
+Time: 3
+job: 2  ready: 0  wait: 0
+Job arrived: 411
+Current Job: 411  Time Left: 2
+IO Request: 0
+
+Time: 4
+job: 1  ready: 1  wait: 0
+Job arrived: 511
+Current Job: 411  Time Left: 1
+IO Request: 0
+
+Time: 5
+job: 0  ready: 2  wait: 0
+A job completed: 411:3:0:0
+
+Time: 5
+job: 0  ready: 1  wait: 0
+Current Job: 511  Time Left: 1
+IO Request: 0
+
+Time: 6
+job: 0  ready: 1  wait: 0
+A job completed: 511:4:0:0
+
+Time: 6
+job: 0  ready: 0  wait: 0
+Current Job: 321  Time Left: 5
+IO Request: 0
+
+Time: 7
+job: 0  ready: 0  wait: 0
+Current Job: 321  Time Left: 4
+IO Request: 0
+
+Time: 8
+job: 0  ready: 0  wait: 0
+Current Job: 321  Time Left: 3
+IO Request: 0
+
+Time: 9
+job: 0  ready: 0  wait: 0
+Current Job: 321  Time Left: 2
+IO Request: 0
+
+Time: 10
+job: 0  ready: 0  wait: 0
+Current Job: 321  Time Left: 1
+IO Request: 0
+
+Time: 11
+job: 0  ready: 0  wait: 0
+A job completed: 321:0:0:1
+
+        |  Total time       |  Total time       |  Total time   |
+Job#    |  in ready to run  |  in sleeping on   |  in system    |
+        |  state            |  I/O state        |               |
+========+===================+===================+===============+
+pid 411 |  0                |  0                |  2            |
+pid 511 |  1                |  0                |  1            |
+pid 321 |  3                |  0                |  10           |
+================================================================+
+Total simulation run time: 11
+Total number of jobs: 3
+Shortest job completion time: 1
+Longest job completion time: 10
+Average job completion time: 4.333
+Average time in ready queue: 1.333
+Average time sleeping on I/O: 0.000
