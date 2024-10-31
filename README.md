@@ -56,8 +56,8 @@ Jingyi Chen<br />
 		make SRTF
 	3. Run test: 
 		make test
-  
-This command will run each executable (RR, MLFQ, SRTF) with test input files job1.txt and job2.txt. The output will be saved in files like RR_output1.txt, MLFQ_output1.txt, etc.<br />
+make test: This command will run each executable (RR, MLFQ, SRTF) with test input files job1.txt and job2.txt. The output will be saved in files like RR_output1.txt, MLFQ_output1.txt, etc.
+
 **Algorithm Testing and Validation**<br />
 Shortest Remaining Time First (SRTF)<br />
 Round Robin (RR)<br />
