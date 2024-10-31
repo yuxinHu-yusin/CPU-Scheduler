@@ -74,8 +74,10 @@ int main(int argc, char* argv[]) {
                 if (test_mode) {
                     printf("IO Completed: %d\n", temp->pid);
                 }
-
                 enqueue(ready_queue, temp);
+		// check if current job shortest after an IO finish waiting
+                enqueue(ready_queue, current_job);
+                current_job = dequeue_short(ready_queue);
             } else {
                 enqueue(wait_queue, temp); // enqueue back if still need wait
             }
