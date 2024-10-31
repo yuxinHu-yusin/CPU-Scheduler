@@ -50,7 +50,16 @@ This project demonstrates the implementation of three CPU scheduling algorithms 
 
 
 ## Description of Files<br />
-- &ensp;**Makefile:** Automates compilation and builds the project using the provided C files.<br />
+- **Makefile:** Automates compilation and builds the project using the provided C files.
+    1. To compile all three programs (RR, MLFQ, and SRTF), simply run:
+		make
+	2. If you want to compile only one specific program, simply run:
+		make MLFQ
+		make RR
+		make SRTF
+	3. Run test: 
+		make test
+This command will run each executable (RR, MLFQ, SRTF) with test input files job1.txt and job2.txt. The output will be saved in files like RR_output1.txt, MLFQ_output1.txt, etc.
 - &ensp;**MLFQ.c**: Implements the Multilevel Feedback Queue scheduling algorithm.<br />
 - &ensp;**RR.c:** Implements the Round Robin scheduling algorithm.<br />
 - &ensp;**SRTF.c**: Implements the Shortest Remaining Time First scheduling algorithm.<br />
@@ -60,7 +69,7 @@ This project demonstrates the implementation of three CPU scheduling algorithms 
 
 
 ## Algorithm Testing and Validation<br />
-A test mode is implemented for this algorithm to print out key information on the simulated CPU’s state at each clock cycle. This includes details such as the current job running, the elapsed time, and notifications when a job arrives, completes, requests I/O, or acquires I/O. Additionally, it displays the number of jobs in each queue. This test mode allows us to observe the behavior of the simulated CPU and jobs, ensuring they align with our scheduling model.Our group also manually calculated some outputs using the same input and observed the I/O requesting/waiting state to verify results.
+A test mode is implemented for this algorithm to print out key information on the simulated CPU’s state at each clock cycle. This includes details such as the current job running, the elapsed time, and notifications when a job arrives, completes, requests I/O, or acquires I/O. Additionally, it displays the number of jobs in each queue. This test mode allows us to observe the behavior of the simulated CPU and jobs, ensuring they align with our scheduling model.Our group also manually calculated some outputs using the same input and observed the I/O requesting/waiting state to verify results.`SRTF_output1_dryrun.txt` is the sample output file of `job1.txt` using the test mode and the result is verified that the matches the schdualing rule.
 
 - **Shortest Remaining Time First (SRTF)** Observations show that the job with the shortest remaining time is consistently prioritized. Whenever a job finishes or a new job enters the ready queue (due to arrival or after completing I/O), the scheduler re-evaluates and swaps in the job with the shortest remaining time. We also note that longer jobs tend to experience longer total times in the system, as the scheduler is biased towards shorter jobs, which are processed earlier, leaving longer jobs toward the end.
 - **Round Robin (RR)** The Round-Robin (RR) scheduling algorithm in the code organizes and processes jobs in a fair, time-sliced manner. It begins by initializing four queues:
