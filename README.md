@@ -27,7 +27,9 @@ This project demonstrates the implementation of three CPU scheduling algorithms 
 - **Time Slice:** In RR, each process receives a fixed time slice of 2 units of time before it is preempted.<br />
 - **Preemption:**  Both SRTF and MLFQ can preempt the currently running process to schedule another process.<br />
 - **Process Arrival:** All algorithms assume that processes arrive at predefined intervals through job configuration files (e.g., input.txt).<br />
-- **Job Data:** All processes/jobs are predefined with attributes such as arrival time, burst time, and priority.<br />
+- **Job Data:** 
+  - All processes/jobs are predefined with attributes such as arrival time, burst time, and priority.<br />
+  - Loading the input file is assumed to takes up one clock cycle.
 - **I/O Requests**:
   - I/O requests and acquisitions occur randomly.
   - Multiple jobs may complete their I/O wait within a single clock cycle.
@@ -71,7 +73,7 @@ This command will run each executable (RR, MLFQ, SRTF) with test input files job
 ## Algorithm Testing and Validation<br />
 A test mode is implemented for this algorithm to print out key information on the simulated CPU’s state at each clock cycle. This includes details such as the current job running, the elapsed time, and notifications when a job arrives, completes, requests I/O, or acquires I/O. Additionally, it displays the number of jobs in each queue. This test mode allows us to observe the behavior of the simulated CPU and jobs, ensuring they align with our scheduling model.Our group also manually calculated some outputs using the same input and observed the I/O requesting/waiting state to verify results.`SRTF_output1_dryrun.txt` is the sample output file of `job1.txt` using the test mode and the result is verified that the matches the schdualing rule.
 
-- **Shortest Remaining Time First (SRTF)** Observations show that the job with the shortest remaining time is consistently prioritized. Whenever a job finishes or a new job enters the ready queue (due to arrival or after completing I/O), the scheduler re-evaluates and swaps in the job with the shortest remaining time. We also note that longer jobs tend to experience longer total times in the system, as the scheduler is biased towards shorter jobs, which are processed earlier, leaving longer jobs toward the end.
+- **Shortest Remaining Time First (SRTF)** Observations show that the job with the shortest remaining time is consistently prioritized. Whenever a job finishes or a new job enters the ready queue (due to arrival or after completing I/O), the scheduler re-evaluates and swaps in the job with the shortest remaining time. We also note that longer jobs tend to experience longer times in the ready queue, as the scheduler is biased towards shorter jobs, which are processed earlier, leaving longer jobs toward the end.
 - **Round Robin (RR)** The Round-Robin (RR) scheduling algorithm in the code organizes and processes jobs in a fair, time-sliced manner. It begins by initializing four queues:
   - **job_queue** for jobs that haven’t arrived yet.
   - **ready_queue** for jobs ready to run.
