@@ -163,7 +163,7 @@ int main(int argc, char* argv[]) {
         // increment clock time
         clock++;
         current_job->service_time--;
-        current_job->cpu_time;
+        current_job->cpu_time++;
 
 
     }
