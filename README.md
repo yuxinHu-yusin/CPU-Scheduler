@@ -46,7 +46,18 @@ Jingyi Chen<br />
 &ensp;**job.c and job.h:** Contains logic for managing processes (or jobs) with relevant structures and operations.<br />
 &ensp;**input1.txt and input2.txt:** Contains attributes such as arrival time, burst time, and priority.<br />
 
+**How to use Makefile:** <br />
 
+	1.To compile all three programs (RR, MLFQ, and SRTF), simply run:
+		make
+	2. If you want to compile only one specific program, simply run:
+		make MLFQ
+		make RR
+		make SRTF
+	3. Run test: 
+		make test
+  
+This command will run each executable (RR, MLFQ, SRTF) with test input files job1.txt and job2.txt. The output will be saved in files like RR_output1.txt, MLFQ_output1.txt, etc.<br />
 **Algorithm Testing and Validation**<br />
 Shortest Remaining Time First (SRTF)<br />
 Round Robin (RR)<br />
