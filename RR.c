@@ -1,11 +1,12 @@
 // coordinator.c
-#include "job.c"
 #include <stdio.h>
 #include <limits.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include "job.h"
+#include "queue.h"
 
-#define test_mode 1
+#define test_mode 0
 
 // define the time quantum as 2
 #define TIME_QUANTUM 2
@@ -24,17 +25,15 @@ int main(int argc, char* argv[]) {
     queue_t* wait_queue = create_queue();       // queue for IO waiting
     queue_t* finished_queue = create_queue();   // put finished job here
 
-    if (test_mode){
-        load_from_file("job1.txt", job_queue);
 
-    } else {
-        // load jobs from the file
-        if (argc != 2) {
-            printf("Please provide one job file as an argument.\n");
-            return 1;
-        }
-        load_from_file(argv[1], job_queue);
-    }
+    if (argc == 2) {
+          load_from_file(argv[1], job_queue);
+      } else {
+          printf("Please provide a job file as an argument.\n");
+          return 1;
+      }
+
+    
 
     clock++;
 
